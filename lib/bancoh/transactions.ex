@@ -53,21 +53,22 @@ defmodule Bancoh.Transactions do
 
   """
   def create_transfer(attrs \\ %{}) do
-    sender = Accounts.get_user!(attrs.sender_id)
-    receiver = Accounts.get_user!(attrs.receiver_id)
-    sender_change = %{balance: sender.balance - attrs.balance}
-    receiver_change = %{balance: receiver.balance + attrs.balance}
-    
-    Multi.new()
-    |> Multi.update(:sender, User.changeset(sender, sender_change))
-    |> Multi.update(:receiver, User.changeset(receiver, receiver_change))
-    |> Multi.insert(:transfer, Transfer.changeset(%Transfer{}, attrs))
-    |> Repo.transaction()
-    
-    # Previous
-    # %Transfer{}
-    # |> Transfer.changeset(attrs)
-    # |> Repo.insert()
+    attrs = Map.new(attrs, fn {k, v} -> {String.to_atom(k), v} end)
+    unless Enum.all?([:sender_id, :receiver_id, :balance], &Map.has_key?(attrs, &1)) do
+      {:error, change_transfer(%Transfer{}, attrs)}
+    else
+      # TODO: send error if user not found
+      sender = Accounts.get_user!(attrs.sender_id)
+      receiver = Accounts.get_user!(attrs.receiver_id)
+      sender_change = %{balance: sender.balance - attrs.balance}
+      receiver_change = %{balance: receiver.balance + attrs.balance}
+      
+      Multi.new()
+      |> Multi.update(:sender, User.changeset(sender, sender_change))
+      |> Multi.update(:receiver, User.changeset(receiver, receiver_change))
+      |> Multi.insert(:transfer, Transfer.changeset(%Transfer{}, attrs))
+      |> Repo.transaction()
+    end
   end
 
   @doc """
@@ -97,11 +98,6 @@ defmodule Bancoh.Transactions do
     else
       {:error, "Transfer was already refunded"}
     end
-
-    # Previous
-    # transfer
-    # |> Transfer.changeset(attrs)
-    # |> Repo.update()
   end
 
   @doc """

@@ -12,7 +12,6 @@ defmodule BancohWeb.TransferController do
   end
 
   def create(conn, %{"transfer" => transfer_params}) do
-    transfer_params = Map.new(transfer_params, fn {k, v} -> {String.to_atom(k), v} end)
     with {:ok, %{transfer: transfer}} <- Transactions.create_transfer(transfer_params) do
       conn
       |> put_status(:created)
@@ -26,7 +25,6 @@ defmodule BancohWeb.TransferController do
     render(conn, "show.json", transfer: transfer)
   end
 
-  # Refund
   def update(conn, %{"id" => id}) do
     transfer = Transactions.get_transfer!(id)
 
