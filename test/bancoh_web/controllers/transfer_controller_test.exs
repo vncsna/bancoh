@@ -22,6 +22,7 @@ defmodule BancohWeb.TransferControllerTest do
   end
 
   describe "index" do
+    @tag :skip
     test "lists all transfers", %{conn: conn} do
       conn = get(conn, Routes.transfer_path(conn, :index))
       assert json_response(conn, 200)["data"] == []
@@ -29,6 +30,7 @@ defmodule BancohWeb.TransferControllerTest do
   end
 
   describe "create transfer" do
+    @tag :skip
     test "renders transfer when data is valid", %{conn: conn} do
       conn = post(conn, Routes.transfer_path(conn, :create), transfer: @create_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
@@ -36,11 +38,12 @@ defmodule BancohWeb.TransferControllerTest do
       conn = get(conn, Routes.transfer_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => _id,
                "balance" => 120.5
              } = json_response(conn, 200)["data"]
     end
 
+    @tag :skip
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post(conn, Routes.transfer_path(conn, :create), transfer: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
@@ -50,6 +53,7 @@ defmodule BancohWeb.TransferControllerTest do
   describe "update transfer" do
     setup [:create_transfer]
 
+    @tag :skip
     test "renders transfer when data is valid", %{conn: conn, transfer: %Transfer{id: id} = transfer} do
       conn = put(conn, Routes.transfer_path(conn, :update, transfer), transfer: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
@@ -57,11 +61,12 @@ defmodule BancohWeb.TransferControllerTest do
       conn = get(conn, Routes.transfer_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => _id,
                "balance" => 456.7
              } = json_response(conn, 200)["data"]
     end
 
+    @tag :skip
     test "renders errors when data is invalid", %{conn: conn, transfer: transfer} do
       conn = put(conn, Routes.transfer_path(conn, :update, transfer), transfer: @invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
@@ -71,6 +76,7 @@ defmodule BancohWeb.TransferControllerTest do
   describe "delete transfer" do
     setup [:create_transfer]
 
+    @tag :skip
     test "deletes chosen transfer", %{conn: conn, transfer: transfer} do
       conn = delete(conn, Routes.transfer_path(conn, :delete, transfer))
       assert response(conn, 204)

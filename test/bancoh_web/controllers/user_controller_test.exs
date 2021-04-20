@@ -42,7 +42,7 @@ defmodule BancohWeb.UserControllerTest do
       conn = get(conn, Routes.user_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => _id,
                "balance" => 120.5,
                "name" => "some name",
                "ssn" => "some ssn",
@@ -66,7 +66,7 @@ defmodule BancohWeb.UserControllerTest do
       conn = get(conn, Routes.user_path(conn, :show, id))
 
       assert %{
-               "id" => id,
+               "id" => _id,
                "balance" => 456.7,
                "name" => "some updated name",
                "ssn" => "some updated ssn",
