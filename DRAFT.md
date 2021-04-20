@@ -1,1 +1,0 @@
-curl -X POST http://localhost:4000/api/users -d "name=Wagner&surname=Aguiar"
