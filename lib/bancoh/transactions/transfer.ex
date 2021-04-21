@@ -21,4 +21,19 @@ defmodule Bancoh.Transactions.Transfer do
     |> foreign_key_constraint(:sender_id)
     |> foreign_key_constraint(:receiver_id)
   end
+
+  @doc false
+  def refund_changeset(transfer, attrs) do
+    transfer
+    |> changeset(attrs)
+    |> (
+      fn changeset, transfer ->
+        if transfer.is_valid do
+          changeset
+        else
+          add_error(changeset, :is_valid, "transfer was already refunded")
+        end
+      end
+    ).(transfer)
+  end
 end

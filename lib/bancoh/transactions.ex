@@ -4,10 +4,9 @@ defmodule Bancoh.Transactions do
   """
 
   import Ecto.Query, warn: false
-  alias Ecto.Multi
 
+  alias Ecto.Multi
   alias Bancoh.Repo
-  alias Bancoh.Accounts
   alias Bancoh.Accounts.User
   alias Bancoh.Transactions.Transfer
 
@@ -57,14 +56,14 @@ defmodule Bancoh.Transactions do
     |> Multi.insert(:transfer, Transfer.changeset(%Transfer{}, attrs))
     |> Multi.run(:sender, fn repo, %{transfer: transfer} ->
       User
-      |> Repo.get(transfer.sender_id)
-      |> (&(User.changeset(&1, %{balance: &1.balance - transfer.balance}))).()
+      |> repo.get(transfer.sender_id)
+      |> (fn user -> User.changeset(user, %{balance: user.balance - transfer.balance}) end).()
       |> repo.update()
     end)
     |> Multi.run(:receiver, fn repo, %{transfer: transfer} ->
       User
-      |> Repo.get(transfer.sender_id)
-      |> (&(User.changeset(&1, %{balance: &1.balance + transfer.balance}))).()
+      |> repo.get(transfer.sender_id)
+      |> (fn user -> User.changeset(user, %{balance: user.balance + transfer.balance}) end).()
       |> repo.update()
     end)
     |> Repo.transaction()
@@ -83,20 +82,21 @@ defmodule Bancoh.Transactions do
 
   """
   def update_transfer(%Transfer{} = transfer) do
-    if transfer.is_valid do
-      sender = Accounts.get_user!(transfer.sender_id)
-      receiver = Accounts.get_user!(transfer.receiver_id)
-      sender_change = %{balance: sender.balance + transfer.balance}
-      receiver_change = %{balance: receiver.balance - transfer.balance}
-  
-      Multi.new()
-      |> Multi.update(:sender, User.changeset(sender, sender_change))
-      |> Multi.update(:receiver, User.changeset(receiver, receiver_change))
-      |> Multi.update(:transfer, Transfer.changeset(transfer, %{is_valid: false}))
-      |> Repo.transaction()
-    else
-      {:error, "Transfer was already refunded"}
-    end
+    Multi.new()
+    |> Multi.insert(:transfer, Transfer.refund_changeset(transfer, %{is_valid: false}))
+    |> Multi.run(:sender, fn repo, %{transfer: transfer} ->
+      User
+      |> repo.get(transfer.sender_id)
+      |> (fn user -> User.changeset(user, %{balance: user.balance + transfer.balance}) end).()
+      |> repo.update()
+    end)
+    |> Multi.run(:receiver, fn repo, %{transfer: transfer} ->
+      User
+      |> repo.get(transfer.sender_id)
+      |> (fn user -> User.changeset(user, %{balance: user.balance - transfer.balance}) end).()
+      |> repo.update()
+    end)
+    |> Repo.transaction()
   end
 
   @doc """

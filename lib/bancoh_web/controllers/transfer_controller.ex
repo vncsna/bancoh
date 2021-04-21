@@ -31,8 +31,11 @@ defmodule BancohWeb.TransferController do
   def update(conn, %{"id" => id}) do
     transfer = Transactions.get_transfer!(id)
 
-    with {:ok, %{transfer: transfer}} <- Transactions.update_transfer(transfer) do
-      render(conn, "show.json", transfer: transfer)
+    case Transactions.update_transfer(transfer) do
+      {:ok, %{transfer: transfer}} ->
+        render(conn, "show.json", transfer: transfer)
+      {:error, _failed_operation, failed_value, _changes_so_far} ->
+        {:error, failed_value}
     end
   end
 
