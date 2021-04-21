@@ -1,12 +1,13 @@
 defmodule Bancoh.Transactions.Transfer do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Bancoh.Accounts.User
 
   schema "transfers" do
     field :balance, :float
-    field :sender_id, :id
-    field :receiver_id, :id
     field :is_valid, :boolean, default: true
+    belongs_to :sender, User
+    belongs_to :receiver, User
 
     timestamps()
   end
@@ -17,5 +18,7 @@ defmodule Bancoh.Transactions.Transfer do
     |> cast(attrs, [:balance, :sender_id, :receiver_id, :is_valid])
     |> validate_required([:balance, :sender_id, :receiver_id])
     |> validate_number(:balance, greater_than: 0)
+    |> foreign_key_constraint(:sender_id)
+    |> foreign_key_constraint(:receiver_id)
   end
 end

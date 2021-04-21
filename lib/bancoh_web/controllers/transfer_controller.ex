@@ -12,11 +12,14 @@ defmodule BancohWeb.TransferController do
   end
 
   def create(conn, %{"transfer" => transfer_params}) do
-    with {:ok, %{transfer: transfer}} <- Transactions.create_transfer(transfer_params) do
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", Routes.transfer_path(conn, :show, transfer))
-      |> render("show.json", transfer: transfer)
+    case Transactions.create_transfer(transfer_params) do
+      {:ok, %{transfer: transfer}} ->
+        conn
+        |> put_status(:created)
+        |> put_resp_header("location", Routes.transfer_path(conn, :show, transfer))
+        |> render("show.json", transfer: transfer)
+      {:error, _failed_operation, failed_value, _changes_so_far} ->
+        {:error, failed_value}
     end
   end
 

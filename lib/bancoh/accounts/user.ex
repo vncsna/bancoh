@@ -3,7 +3,7 @@ defmodule Bancoh.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
-    field :balance, :float
+    field :balance, :float, default: 0.0
     field :name, :string
     field :ssn, :string
     field :surname, :string
