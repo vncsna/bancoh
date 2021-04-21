@@ -54,7 +54,10 @@ defmodule BancohWeb.TransferControllerTest do
     setup [:create_transfer]
 
     @tag :skip
-    test "renders transfer when data is valid", %{conn: conn, transfer: %Transfer{id: id} = transfer} do
+    test "renders transfer when data is valid", %{
+      conn: conn,
+      transfer: %Transfer{id: id} = transfer
+    } do
       conn = put(conn, Routes.transfer_path(conn, :update, transfer), transfer: @update_attrs)
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 

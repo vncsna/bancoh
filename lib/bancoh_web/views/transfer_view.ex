@@ -11,11 +11,13 @@ defmodule BancohWeb.TransferView do
   end
 
   def render("transfer.json", %{transfer: transfer}) do
-    %{id: transfer.id,
+    %{
+      id: transfer.id,
       sender_id: transfer.sender_id,
       receiver_id: transfer.receiver_id,
       date: transfer.inserted_at,
       balance: transfer.balance,
-      is_valid: transfer.is_valid}
+      is_valid: transfer.is_valid
+    }
   end
 end

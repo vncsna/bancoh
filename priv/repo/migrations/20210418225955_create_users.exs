@@ -10,6 +10,7 @@ defmodule Bancoh.Repo.Migrations.CreateUsers do
 
       timestamps()
     end
+
     create unique_index(:users, [:ssn])
   end
 end

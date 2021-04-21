@@ -21,7 +21,7 @@ defmodule BancohWeb.Router do
 
   scope "/api", BancohWeb do
     pipe_through :api
-    
+
     resources "/users", UserController, except: [:new, :edit]
     resources "/transfers", TransferController, except: [:new, :edit]
   end

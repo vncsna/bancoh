@@ -7,7 +7,12 @@ defmodule Bancoh.AccountsTest do
     alias Bancoh.Accounts.User
 
     @valid_attrs %{balance: 120.5, name: "some name", ssn: "some ssn", surname: "some surname"}
-    @update_attrs %{balance: 456.7, name: "some updated name", ssn: "some updated ssn", surname: "some updated surname"}
+    @update_attrs %{
+      balance: 456.7,
+      name: "some updated name",
+      ssn: "some updated ssn",
+      surname: "some updated surname"
+    }
     @invalid_attrs %{balance: nil, name: nil, ssn: nil, surname: nil}
 
     def user_fixture(attrs \\ %{}) do

@@ -57,7 +57,7 @@ defmodule Bancoh.Transactions do
     |> Multi.run(:receiver, increase_balance())
     |> Multi.run(:sender, decrease_balance())
     |> Repo.transaction()
-  end  
+  end
 
   defp increase_balance(is_refund \\ false) do
     fn repo, %{transfer: transfer} ->

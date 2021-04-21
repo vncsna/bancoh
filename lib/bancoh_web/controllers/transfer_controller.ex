@@ -18,6 +18,7 @@ defmodule BancohWeb.TransferController do
         |> put_status(:created)
         |> put_resp_header("location", Routes.transfer_path(conn, :show, transfer))
         |> render("show.json", transfer: transfer)
+
       {:error, _failed_operation, failed_value, _changes_so_far} ->
         {:error, failed_value}
     end
@@ -34,6 +35,7 @@ defmodule BancohWeb.TransferController do
     case Transactions.update_transfer(transfer) do
       {:ok, %{transfer: transfer}} ->
         render(conn, "show.json", transfer: transfer)
+
       {:error, _failed_operation, failed_value, _changes_so_far} ->
         {:error, failed_value}
     end
