@@ -54,19 +54,27 @@ defmodule Bancoh.Transactions do
   def create_transfer(attrs \\ %{}) do
     Multi.new()
     |> Multi.insert(:transfer, Transfer.changeset(%Transfer{}, attrs))
-    |> Multi.run(:sender, fn repo, %{transfer: transfer} ->
+    |> Multi.run(:receiver, increase_balance())
+    |> Multi.run(:sender, decrease_balance())
+    |> Repo.transaction()
+  end  
+
+  defp increase_balance(is_refund \\ false) do
+    fn repo, %{transfer: transfer} ->
       User
-      |> repo.get(transfer.sender_id)
-      |> (fn user -> User.changeset(user, %{balance: user.balance - transfer.balance}) end).()
-      |> repo.update()
-    end)
-    |> Multi.run(:receiver, fn repo, %{transfer: transfer} ->
-      User
-      |> repo.get(transfer.sender_id)
+      |> repo.get(if is_refund, do: transfer.sender_id, else: transfer.receiver_id)
       |> (fn user -> User.changeset(user, %{balance: user.balance + transfer.balance}) end).()
       |> repo.update()
-    end)
-    |> Repo.transaction()
+    end
+  end
+
+  defp decrease_balance(is_refund \\ false) do
+    fn repo, %{transfer: transfer} ->
+      User
+      |> repo.get(if is_refund, do: transfer.receiver_id, else: transfer.sender_id)
+      |> (fn user -> User.changeset(user, %{balance: user.balance - transfer.balance}) end).()
+      |> repo.update()
+    end
   end
 
   @doc """
@@ -84,18 +92,8 @@ defmodule Bancoh.Transactions do
   def update_transfer(%Transfer{} = transfer) do
     Multi.new()
     |> Multi.insert(:transfer, Transfer.refund_changeset(transfer, %{is_valid: false}))
-    |> Multi.run(:sender, fn repo, %{transfer: transfer} ->
-      User
-      |> repo.get(transfer.sender_id)
-      |> (fn user -> User.changeset(user, %{balance: user.balance + transfer.balance}) end).()
-      |> repo.update()
-    end)
-    |> Multi.run(:receiver, fn repo, %{transfer: transfer} ->
-      User
-      |> repo.get(transfer.sender_id)
-      |> (fn user -> User.changeset(user, %{balance: user.balance - transfer.balance}) end).()
-      |> repo.update()
-    end)
+    |> Multi.run(:receiver, increase_balance(true))
+    |> Multi.run(:sender, decrease_balance(true))
     |> Repo.transaction()
   end
 

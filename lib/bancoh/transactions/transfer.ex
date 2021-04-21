@@ -26,14 +26,15 @@ defmodule Bancoh.Transactions.Transfer do
   def refund_changeset(transfer, attrs) do
     transfer
     |> changeset(attrs)
-    |> (
-      fn changeset, transfer ->
-        if transfer.is_valid do
-          changeset
-        else
-          add_error(changeset, :is_valid, "transfer was already refunded")
-        end
-      end
-    ).(transfer)
+    |> already_refunded?(transfer)
+  end
+
+  @doc false
+  defp already_refunded?(changeset, transfer) do
+    if transfer.is_valid do
+      changeset
+    else
+      add_error(changeset, :is_valid, "transfer was already refunded")
+    end
   end
 end
