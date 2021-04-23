@@ -24,6 +24,22 @@ defmodule Bancoh.Accounts do
   @doc """
   Gets a single user.
 
+  Returns nil if the User does not exist.
+
+  ## Examples
+
+      iex> get_user(123)
+      %User{}
+
+      iex> get_user(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_user(id), do: Repo.get(User, id)
+
+  @doc """
+  Gets a single user.
+
   Raises `Ecto.NoResultsError` if the User does not exist.
 
   ## Examples
@@ -36,6 +52,22 @@ defmodule Bancoh.Accounts do
 
   """
   def get_user!(id), do: Repo.get!(User, id)
+
+  @doc """
+  Gets a single user.
+
+  Raises `Ecto.NoResultsError` if the User does not exist.
+
+  ## Examples
+
+      iex> get_user!(123)
+      %User{}
+
+      iex> get_user!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_user_by_ssn(ssn), do: Repo.get_by(User, ssn: ssn)
 
   @doc """
   Creates a user.
@@ -51,7 +83,7 @@ defmodule Bancoh.Accounts do
   """
   def create_user(attrs \\ %{}) do
     %User{}
-    |> User.changeset(attrs)
+    |> User.registration_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -100,5 +132,22 @@ defmodule Bancoh.Accounts do
   """
   def change_user(%User{} = user, attrs \\ %{}) do
     User.changeset(user, attrs)
+  end
+
+  def auth_user(%{"ssn" => ssn, "password" => password}) do
+    user = get_user_by_ssn(ssn)
+
+    cond do
+      user && Pbkdf2.verify_pass(password, user.password_hash) ->
+        term = %{user_id: user.id, user_auth: 0}
+        token = Phoenix.Token.sign(BancohWeb.Endpoint, "userauth", term)
+        {:ok, token}
+
+      user ->
+        {:error, :unauthorized}
+
+      true ->
+        {:error, :not_found}
+    end
   end
 end

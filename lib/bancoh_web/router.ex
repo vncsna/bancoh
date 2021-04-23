@@ -22,8 +22,9 @@ defmodule BancohWeb.Router do
   scope "/api", BancohWeb do
     pipe_through :api
 
-    resources "/users", UserController, except: [:new, :edit]
-    resources "/transfers", TransferController, except: [:new, :edit]
+    post "/users/auth", UserController, :auth
+    resources "/users", UserController, except: [:index, :new, :edit, :delete]
+    resources "/transfers", TransferController, except: [:index, :new, :edit, :delete]
   end
 
   # Enables LiveDashboard only for development

@@ -4,6 +4,8 @@ defmodule BancohWeb.TransferController do
   alias Bancoh.Transactions
   alias Bancoh.Transactions.Transfer
 
+  plug BancohWeb.Auth when action in [:create, :show, :update]
+
   action_fallback BancohWeb.FallbackController
 
   def index(conn, _params) do
@@ -12,6 +14,8 @@ defmodule BancohWeb.TransferController do
   end
 
   def create(conn, %{"transfer" => transfer_params}) do
+    transfer_params = Map.merge(transfer_params, %{"sender_id" => conn.assigns[:user_id]})
+
     case Transactions.create_transfer(transfer_params) do
       {:ok, %{transfer: transfer}} ->
         conn

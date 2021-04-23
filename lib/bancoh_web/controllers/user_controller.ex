@@ -4,6 +4,8 @@ defmodule BancohWeb.UserController do
   alias Bancoh.Accounts
   alias Bancoh.Accounts.User
 
+  plug BancohWeb.Auth when action in [:show, :update]
+
   action_fallback BancohWeb.FallbackController
 
   def index(conn, _params) do
@@ -38,6 +40,12 @@ defmodule BancohWeb.UserController do
 
     with {:ok, %User{}} <- Accounts.delete_user(user) do
       send_resp(conn, :no_content, "")
+    end
+  end
+
+  def auth(conn, %{"user" => user_params}) do
+    with {:ok, token} <- Accounts.auth_user(user_params) do
+      render(conn, "show.json", token: token)
     end
   end
 end

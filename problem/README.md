@@ -102,7 +102,7 @@ endpoints permitindo realizar as operações descritas abaixo.
 
 #### Autenticação
 
-- [ ] Neste endpoint, devem ser enviados os dados de login de uma conta já cadastrada.
+- [x] Neste endpoint, devem ser enviados os dados de login de uma conta já cadastrada.
 Esses dados devem ser validados e deve ser retornado um token que será utilizado
 para validar transações do usuário. Nos próximos endpoints, o token deve ser 
 enviado para identificar o usuário logado.
@@ -131,7 +131,7 @@ O endpoint deve retornar todas as transações realizadas pelo usuário logado e
 - [x] Uma transação só deve ser realizada caso haja saldo suficiente na conta do usuário para realizá-la.
 - [x] Após a realização de uma transação, a conta do usuário enviante deve ter seu valor descontado do valor da transação e a do usuário recebedor acrescentada do valor da transação.
 - [x] Todas as transações realizadas devem ser registradas no banco de dados.
-- [ ] Caso todas as transações no banco de dados sejam realizadas novamente a partir do estado inicial de todas as contas, os saldos devem equivaler aos saldos expostos na interface.
+- [x] Caso todas as transações no banco de dados sejam realizadas novamente a partir do estado inicial de todas as contas, os saldos devem equivaler aos saldos expostos na interface.
 
 ## Entidades
 
