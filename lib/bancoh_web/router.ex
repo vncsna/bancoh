@@ -22,12 +22,12 @@ defmodule BancohWeb.Router do
   scope "/api", BancohWeb do
     pipe_through :api
     
-    post "/users", UserController, :create
     get  "/users", UserController, :show
+    post "/users", UserController, :create
     post "/users/auth", UserController, :auth
 
-    post "/transfers", TransferController, :create
     get  "/transfers", TransferController, :index
+    post "/transfers", TransferController, :create
     put  "/transfers/:id", TransferController, :refund
   end
 
