@@ -54,22 +54,6 @@ defmodule Bancoh.Accounts do
   def get_user!(id), do: Repo.get!(User, id)
 
   @doc """
-  Gets a single user.
-
-  Raises `Ecto.NoResultsError` if the User does not exist.
-
-  ## Examples
-
-      iex> get_user!(123)
-      %User{}
-
-      iex> get_user!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_user_by_ssn(ssn), do: Repo.get_by(User, ssn: ssn)
-
-  @doc """
   Creates a user.
 
   ## Examples
@@ -134,8 +118,17 @@ defmodule Bancoh.Accounts do
     User.changeset(user, attrs)
   end
 
+  @doc """
+  Returns a token if user is authorized.
+
+  ## Examples
+
+      iex> change_user(user)
+      %Ecto.Changeset{data: %User{}}
+
+  """
   def auth_user(%{"ssn" => ssn, "password" => password}) do
-    user = get_user_by_ssn(ssn)
+    user = Repo.get_by(User, ssn: ssn)
 
     cond do
       user && Pbkdf2.verify_pass(password, user.password_hash) ->

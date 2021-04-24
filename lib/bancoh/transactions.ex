@@ -11,11 +11,11 @@ defmodule Bancoh.Transactions do
   alias Bancoh.Transactions.Transfer
 
   @doc """
-  Returns the list of transfers.
+  Returns the list of transfers between dates.
 
   ## Examples
 
-      iex> list_transfers()
+      iex> list_transfers(1, ~N[2020-04-20 00:00:00], ~N[2020-04-20 00:00:00])
       [%Transfer{}, ...]
 
   """
@@ -51,10 +51,10 @@ defmodule Bancoh.Transactions do
   ## Examples
 
       iex> create_transfer(%{field: value})
-      {:ok, %Transfer{}}
+      {:ok, %{transfer: %Transfer{}, receiver: %User{}, sender: %User{}}}
 
       iex> create_transfer(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      {:error, failed_operation, failed_value, changes_so_far}
 
   """
   def create_transfer(attrs \\ %{}) do
@@ -89,10 +89,10 @@ defmodule Bancoh.Transactions do
   ## Examples
 
       iex> refund_transfer(transfer, %{field: new_value})
-      {:ok, %Transfer{}}
+      {:ok, %{transfer: %Transfer{}, receiver: %User{}, sender: %User{}}}
 
       iex> refund_transfer(transfer, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
+      {:error, failed_operation, failed_value, changes_so_far}
 
   """
   def refund_transfer(%Transfer{} = transfer) do
