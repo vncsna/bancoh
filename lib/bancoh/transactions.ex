@@ -19,8 +19,14 @@ defmodule Bancoh.Transactions do
       [%Transfer{}, ...]
 
   """
-  def list_transfers do
-    Repo.all(Transfer)
+  def list_transfers(id, date_fr, date_to) do
+    Repo.all(
+      from t in Transfer,
+      where: t.sender_id == ^id,
+      where: t.inserted_at >= ^date_fr,
+      where: t.inserted_at <= ^date_to,
+      select: t
+    )
   end
 
   @doc """
@@ -82,16 +88,16 @@ defmodule Bancoh.Transactions do
 
   ## Examples
 
-      iex> update_transfer(transfer, %{field: new_value})
+      iex> refund_transfer(transfer, %{field: new_value})
       {:ok, %Transfer{}}
 
-      iex> update_transfer(transfer, %{field: bad_value})
+      iex> refund_transfer(transfer, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_transfer(%Transfer{} = transfer) do
+  def refund_transfer(%Transfer{} = transfer) do
     Multi.new()
-    |> Multi.insert(:transfer, Transfer.refund_changeset(transfer, %{is_valid: false}))
+    |> Multi.update(:transfer, Transfer.refund_changeset(transfer, %{is_valid: false}))
     |> Multi.run(:receiver, increase_balance(true))
     |> Multi.run(:sender, decrease_balance(true))
     |> Repo.transaction()
