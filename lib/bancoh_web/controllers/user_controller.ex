@@ -17,7 +17,7 @@ defmodule BancohWeb.UserController do
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.user_path(conn, :show, user))
+      |> put_resp_header("location", Routes.user_path(conn, :show)) #, user)) # check error
       |> render("show.json", user: user)
     end
   end
@@ -45,7 +45,7 @@ defmodule BancohWeb.UserController do
 
   def auth(conn, %{"user" => user_params}) do
     with {:ok, token} <- Accounts.auth_user(user_params) do
-      render(conn, "show.json", token: token)
+      render(conn, "auth.json", token: token)
     end
   end
 end
