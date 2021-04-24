@@ -21,14 +21,14 @@ defmodule BancohWeb.Router do
 
   scope "/api", BancohWeb do
     pipe_through :api
-    
-    get  "/users", UserController, :show
+
+    get "/users", UserController, :show
     post "/users", UserController, :create
     post "/users/auth", UserController, :auth
 
-    get  "/transfers", TransferController, :index
+    get "/transfers", TransferController, :index
     post "/transfers", TransferController, :create
-    put  "/transfers/:id", TransferController, :refund
+    put "/transfers/:id", TransferController, :refund
   end
 
   # Enables LiveDashboard only for development

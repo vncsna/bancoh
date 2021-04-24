@@ -22,10 +22,10 @@ defmodule Bancoh.Transactions do
   def list_transfers(id, date_fr, date_to) do
     Repo.all(
       from t in Transfer,
-      where: t.sender_id == ^id,
-      where: t.inserted_at >= ^date_fr,
-      where: t.inserted_at <= ^date_to,
-      select: t
+        where: t.sender_id == ^id,
+        where: t.inserted_at >= ^date_fr,
+        where: t.inserted_at <= ^date_to,
+        select: t
     )
   end
 
