@@ -23,7 +23,7 @@ defmodule BancohWeb.TransferController do
       {:ok, %{transfer: transfer}} ->
         conn
         |> put_status(:created)
-        |> put_resp_header("location", Routes.transfer_path(conn, :show))
+        |> put_resp_header("location", Routes.transfer_path(conn, :index))
         |> render("show.json", transfer: transfer)
 
       {:error, _failed_operation, failed_value, _changes_so_far} ->
