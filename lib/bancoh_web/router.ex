@@ -27,8 +27,8 @@ defmodule BancohWeb.Router do
     post "/users/auth", UserController, :auth
 
     post "/transfers", TransferController, :create
-    get  "/transfers", TransferController, :show
-    put  "/transfers/:id", TransferController, :update
+    get  "/transfers", TransferController, :index
+    put  "/transfers/:id", TransferController, :refund
   end
 
   # Enables LiveDashboard only for development
