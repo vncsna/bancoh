@@ -3,7 +3,9 @@ defmodule BancohWeb.TransferController do
 
   alias Bancoh.Transactions
 
-  plug BancohWeb.Auth when action in [:index, :create, :refund]
+  if Mix.env() != 'test' do
+    plug BancohWeb.Auth when action in [:index, :create, :refund]
+  end
 
   action_fallback BancohWeb.FallbackController
 

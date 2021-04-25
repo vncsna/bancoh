@@ -4,7 +4,9 @@ defmodule BancohWeb.UserController do
   alias Bancoh.Accounts
   alias Bancoh.Accounts.User
 
-  plug BancohWeb.Auth when action in [:show]
+  if Mix.env() != 'test' do
+    plug BancohWeb.Auth when action in [:show]
+  end
 
   action_fallback BancohWeb.FallbackController
 
