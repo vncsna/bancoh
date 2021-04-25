@@ -1,21 +1,30 @@
 defmodule BancohWeb.Auth do
   import Plug.Conn
+  alias BancohWeb.FallbackController
 
   def init(opts), do: opts
 
   def call(%Plug.Conn{} = conn, _opts) do
-    ["Bearer " <> token] = get_req_header(conn, "authorization")
-
-    case Phoenix.Token.verify(BancohWeb.Endpoint, "userauth", token, max_age: 1800) do
-      {:ok, %{user_id: user_id, user_auth: user_auth}} ->
-        conn
-        |> assign(:user_id, user_id)
-        |> assign(:user_auth, user_auth)
-
-      {:error, _} ->
+    with {:ok, token} <- get_token(conn),
+         {:ok, %{current_user: current_user}} <- verify_user(token) do
+      conn
+      |> assign(:current_user, current_user)
+    else
+      _error ->
         conn
         |> halt()
-        |> BancohWeb.FallbackController.call({:error, :unauthorized})
+        |> FallbackController.call({:error, :unauthorized})
     end
+  end
+
+  defp get_token(conn) do
+    case get_req_header(conn, "authorization") do
+      ["Bearer " <> token] -> {:ok, token}
+      _ -> {:error}
+    end
+  end
+
+  defp verify_user(token) do
+    Phoenix.Token.verify(BancohWeb.Endpoint, "userauth", token, max_age: 1800)
   end
 end

@@ -25,13 +25,13 @@ defmodule BancohWeb.UserController do
   end
 
   def show(conn, _params) do
-    id = conn.assigns[:user_id]
+    id = conn.assigns[:current_user]
     user = Accounts.get_user!(id)
     render(conn, "show.json", user: user)
   end
 
   # def update(conn, %{"user" => user_params}) do
-  #   id = conn.assigns[:user_id]
+  #   id = conn.assigns[:current_user]
   #   user = Accounts.get_user!(id)
   # 
   #   with {:ok, %User{} = user} <- Accounts.update_user(user, user_params) do
@@ -40,7 +40,7 @@ defmodule BancohWeb.UserController do
   # end
 
   # def delete(conn, _params) do
-  #   id = conn.assigns[:user_id]
+  #   id = conn.assigns[:current_user]
   #   user = Accounts.get_user!(id)
   # 
   #   with {:ok, %User{}} <- Accounts.delete_user(user) do

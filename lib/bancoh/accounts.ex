@@ -132,7 +132,7 @@ defmodule Bancoh.Accounts do
 
     cond do
       user && Pbkdf2.verify_pass(password, user.password_hash) ->
-        term = %{user_id: user.id, user_auth: 0}
+        term = %{current_user: user.id}
         token = Phoenix.Token.sign(BancohWeb.Endpoint, "userauth", term)
         {:ok, token}
 

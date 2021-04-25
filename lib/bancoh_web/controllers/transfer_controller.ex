@@ -10,7 +10,7 @@ defmodule BancohWeb.TransferController do
   action_fallback BancohWeb.FallbackController
 
   def index(conn, %{"date_fr" => date_fr, "date_to" => date_to}) do
-    id = conn.assigns[:user_id]
+    id = conn.assigns[:current_user]
     {:ok, date_fr, _} = DateTime.from_iso8601(date_fr <> "T00:00:00Z")
     {:ok, date_to, _} = DateTime.from_iso8601(date_to <> "T23:59:59Z")
     transfers = Transactions.list_transfers(id, date_fr, date_to)
@@ -18,7 +18,7 @@ defmodule BancohWeb.TransferController do
   end
 
   def create(conn, %{"transfer" => transfer_params}) do
-    id = conn.assigns[:user_id]
+    id = conn.assigns[:current_user]
     transfer_params = Map.merge(transfer_params, %{"sender_id" => id})
 
     case Transactions.create_transfer(transfer_params) do
@@ -34,13 +34,13 @@ defmodule BancohWeb.TransferController do
   end
 
   # def show(conn, _params) do
-  #   id = conn.assigns[:user_id]
+  #   id = conn.assigns[:current_user]
   #   transfer = Transactions.get_transfer!(id)
   #   render(conn, "show.json", transfer: transfer)
   # end
 
   def refund(conn, _params) do
-    id = conn.assigns[:user_id]
+    id = conn.assigns[:current_user]
     transfer = Transactions.get_transfer!(id)
 
     case Transactions.refund_transfer(transfer) do
@@ -53,7 +53,7 @@ defmodule BancohWeb.TransferController do
   end
 
   # def delete(conn, _params) do
-  #   id = conn.assigns[:user_id]
+  #   id = conn.assigns[:current_user]
   #   transfer = Transactions.get_transfer!(id)
   # 
   #   with {:ok, %Transfer{}} <- Transactions.delete_transfer(transfer) do
