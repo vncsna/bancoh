@@ -4,16 +4,11 @@ defmodule BancohWeb.UserController do
   alias Bancoh.Accounts
   alias Bancoh.Accounts.User
 
-  if Mix.env() != 'test' do
+  if Mix.env() != :test do
     plug BancohWeb.Auth when action in [:show]
   end
 
   action_fallback BancohWeb.FallbackController
-
-  # def index(conn, _params) do
-  #   users = Accounts.list_users()
-  #   render(conn, "index.json", users: users)
-  # end
 
   def create(conn, %{"user" => user_params}) do
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
@@ -29,6 +24,17 @@ defmodule BancohWeb.UserController do
     user = Accounts.get_user!(id)
     render(conn, "show.json", user: user)
   end
+
+  def auth(conn, %{"user" => user_params}) do
+    with {:ok, token} <- Accounts.auth_user(user_params) do
+      render(conn, "auth.json", token: token)
+    end
+  end
+
+  # def index(conn, _params) do
+  #   users = Accounts.list_users()
+  #   render(conn, "index.json", users: users)
+  # end
 
   # def update(conn, %{"user" => user_params}) do
   #   id = conn.assigns[:current_user]
@@ -47,10 +53,4 @@ defmodule BancohWeb.UserController do
   #     send_resp(conn, :no_content, "")
   #   end
   # end
-
-  def auth(conn, %{"user" => user_params}) do
-    with {:ok, token} <- Accounts.auth_user(user_params) do
-      render(conn, "auth.json", token: token)
-    end
-  end
 end

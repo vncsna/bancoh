@@ -3,7 +3,7 @@ defmodule BancohWeb.TransferController do
 
   alias Bancoh.Transactions
 
-  if Mix.env() != 'test' do
+  if Mix.env() != :test do
     plug BancohWeb.Auth when action in [:index, :create, :refund]
   end
 
@@ -33,12 +33,6 @@ defmodule BancohWeb.TransferController do
     end
   end
 
-  # def show(conn, _params) do
-  #   id = conn.assigns[:current_user]
-  #   transfer = Transactions.get_transfer!(id)
-  #   render(conn, "show.json", transfer: transfer)
-  # end
-
   def refund(conn, _params) do
     id = conn.assigns[:current_user]
     transfer = Transactions.get_transfer!(id)
@@ -51,6 +45,12 @@ defmodule BancohWeb.TransferController do
         {:error, failed_value}
     end
   end
+
+  # def show(conn, _params) do
+  #   id = conn.assigns[:current_user]
+  #   transfer = Transactions.get_transfer!(id)
+  #   render(conn, "show.json", transfer: transfer)
+  # end
 
   # def delete(conn, _params) do
   #   id = conn.assigns[:current_user]
