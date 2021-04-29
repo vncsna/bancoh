@@ -14,6 +14,9 @@ jobs:
       matrix:
         otp: [22.3]
         elixir: [1.10.3]
+    env:
+        MIX_ENV: test
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
     services:
       db:
@@ -44,6 +47,3 @@ jobs:
       
     - name: Run tests
       run: mix coveralls.github
-      env:
-        MIX_ENV: test
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
