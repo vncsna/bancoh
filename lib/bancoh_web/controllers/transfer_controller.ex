@@ -3,9 +3,7 @@ defmodule BancohWeb.TransferController do
 
   alias Bancoh.Transactions
 
-  if Mix.env() != :test do
-    plug BancohWeb.Auth when action in [:index, :create, :refund]
-  end
+  plug BancohWeb.Auth when action in [:index, :create, :refund]
 
   action_fallback BancohWeb.FallbackController
 
@@ -45,19 +43,4 @@ defmodule BancohWeb.TransferController do
         {:error, failed_value}
     end
   end
-
-  # def show(conn, _params) do
-  #   id = conn.assigns[:current_user]
-  #   transfer = Transactions.get_transfer!(id)
-  #   render(conn, "show.json", transfer: transfer)
-  # end
-
-  # def delete(conn, _params) do
-  #   id = conn.assigns[:current_user]
-  #   transfer = Transactions.get_transfer!(id)
-  # 
-  #   with {:ok, %Transfer{}} <- Transactions.delete_transfer(transfer) do
-  #     send_resp(conn, :no_content, "")
-  #   end
-  # end
 end
