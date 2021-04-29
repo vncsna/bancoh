@@ -1,10 +1,6 @@
-name: Bancoh CI/CD
+name: Bancoh CI
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -44,18 +40,3 @@ jobs:
       run: mix deps.get
     - name: Run tests
       run: mix coveralls.github
-  
-  deploy:
-    name: Deploy to Heroku
-    needs: build
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Push to Heroku
-      uses: akhileshns/heroku-deploy@v3.12.12
-      with:
-        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-        heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-        heroku_email: ${{ secrets.HEROKU_EMAIL }}
