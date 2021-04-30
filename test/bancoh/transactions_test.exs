@@ -1,7 +1,6 @@
 defmodule Bancoh.TransactionsTest do
-  use Bancoh.DataCase
+  use Bancoh.DataCase, async: true
 
-  alias Bancoh.Accounts
   alias Bancoh.Transactions
   import Bancoh.Fixtures
 
@@ -9,8 +8,8 @@ defmodule Bancoh.TransactionsTest do
     alias Bancoh.Transactions.Transfer
 
     test "list_transfers/3 returns all transfers" do
-      transfer = transfer_fixture()
       now = DateTime.utc_now()
+      transfer = transfer_fixture()
 
       assert Transactions.list_transfers(
                transfer.sender_id,
@@ -35,8 +34,8 @@ defmodule Bancoh.TransactionsTest do
       assert {:error, :transfer, %Ecto.Changeset{}, _} = Transactions.create_transfer(attrs)
     end
 
-    test "create_transfer/1 with invalid users returns error changeset" do
-      attrs = valid_transfer(%{balance: -100})
+    test "create_transfer/1 with invalid sender id returns error changeset" do
+      attrs = valid_transfer(%{sender_id: -100})
       assert {:error, :transfer, %Ecto.Changeset{}, _} = Transactions.create_transfer(attrs)
     end
 
@@ -49,12 +48,12 @@ defmodule Bancoh.TransactionsTest do
       attrs = transfer_fixture()
       assert {:ok, %{transfer: transfer}} = Transactions.refund_transfer(attrs)
       assert transfer.balance == attrs.balance
+      assert transfer.is_valid == false
     end
 
-    @tag :fixed
     test "refund_transfer/2 more than one time returns error changeset" do
-      transfer = transfer_fixture()
-      assert {:ok, %{transfer: transfer}} = Transactions.refund_transfer(transfer)
+      attrs = transfer_fixture()
+      assert {:ok, %{transfer: transfer}} = Transactions.refund_transfer(attrs)
       assert {:error, :transfer, %Ecto.Changeset{}, _} = Transactions.refund_transfer(transfer)
       assert transfer == Transactions.get_transfer!(transfer.id)
     end

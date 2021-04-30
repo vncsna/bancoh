@@ -1,108 +1,91 @@
 defmodule BancohWeb.TransferControllerTest do
-  use BancohWeb.ConnCase
+  use BancohWeb.ConnCase, async: true
 
-  alias Bancoh.Accounts
-  alias Bancoh.Transactions
-  alias Bancoh.Transactions.Transfer
-
-  @create_attrs %{balance: 80, sender_id: 1, receiver_id: 2}
-  @refund_attrs %{balance: 120, sender_id: 1, receiver_id: 2}
-  @invalid_attrs %{balance: nil, sender_id: nil, receiver_id: nil}
-
-  @user_poor %{balance: 0000, name: "1", ssn: "1", surname: "1", password: "111111"}
-  @user_rich %{balance: 1000, name: "2", ssn: "2", surname: "2", password: "222222"}
-
-  @date_fr "2020-04-01"
-  @date_to "2020-05-01"
-
-  def fixture(:transfer) do
-    {:ok, transfer} = Transactions.create_transfer(@create_attrs)
-    transfer
-  end
+  import Bancoh.Fixtures
 
   setup %{conn: conn} do
-    IO.puts("ENTROU AQUI")
+    sender = user_fixture(%{ssn: "00000000000"})
+    receiver = user_fixture(%{ssn: "11111111111"})
+    user = %{"ssn" => sender.ssn, "password" => sender.password}
 
-    {:ok, _} = Accounts.create_user(@user_poor)
-    {:ok, _} = Accounts.create_user(@user_rich)
+    conn =
+      conn
+      |> put_req_header("accept", "application/json")
+      |> post(Routes.user_path(conn, :auth), user: user)
 
-    conn = assign(conn, :current_user, 1)
-    conn = put_req_header(conn, "accept", "application/json")
+    assert %{"token" => token} = json_response(conn, 200)
 
-    {:ok, conn: conn}
+    conn =
+      conn
+      |> recycle()
+      |> put_req_header("authorization", "Bearer " <> token)
+
+    {:ok, conn: conn, users: %{sender_id: sender.id, receiver_id: receiver.id}}
   end
 
   describe "index" do
-    @tag :skip
     test "lists all transfers", %{conn: conn} do
-      conn = get(conn, Routes.transfer_path(conn, :index), date_fr: @date_fr, date_to: @date_to)
+      date_fr =
+        DateTime.utc_now()
+        |> DateTime.add(-86400, :second)
+        |> datetime_to_string()
+
+      date_to =
+        DateTime.utc_now()
+        |> DateTime.add(+86400, :second)
+        |> datetime_to_string()
+
+      date = %{"date_fr" => date_fr, "date_to" => date_to}
+      conn = get(conn, Routes.transfer_path(conn, :index), date)
       assert json_response(conn, 200)["data"] == []
     end
   end
 
   describe "create transfer" do
-    @tag :skip
-    test "renders transfer when data is valid", %{conn: conn} do
-      conn = post(conn, Routes.transfer_path(conn, :create), transfer: @create_attrs)
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+    test "renders transfer when data is valid", %{conn: conn, users: users} do
+      attrs = valid_transfer(users)
+      conn = post(conn, Routes.transfer_path(conn, :create), transfer: attrs)
 
-      conn = get(conn, Routes.transfer_path(conn, :show, id))
-
-      assert %{
-               "id" => _id,
-               "balance" => 120.5
-             } = json_response(conn, 200)["data"]
+      assert response = json_response(conn, 201)["data"]
+      assert attrs.balance == response["balance"]
+      assert true == response["is_valid"]
+      assert attrs.receiver_id == response["receiver_id"]
+      assert attrs.sender_id == response["sender_id"]
     end
 
-    @tag :skip
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post(conn, Routes.transfer_path(conn, :create), transfer: @invalid_attrs)
+    test "renders errors when data is invalid", %{conn: conn, users: users} do
+      attrs = Map.merge(users, %{balance: -100})
+      conn = post(conn, Routes.transfer_path(conn, :create), transfer: attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
 
   describe "refund transfer" do
-    setup [:create_transfer]
-
-    @tag :skip
-    test "renders transfer when data is valid", %{
-      conn: conn,
-      transfer: %Transfer{id: id} = transfer
-    } do
-      conn = put(conn, Routes.transfer_path(conn, :refund, transfer), transfer: @refund_attrs)
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
-
-      conn = get(conn, Routes.transfer_path(conn, :show, id))
+    test "renders transfer when data is valid", %{conn: conn, users: users} do
+      transfer = transfer_fixture(users)
+      conn = put(conn, Routes.transfer_path(conn, :refund, transfer.id))
 
       assert %{
-               "id" => _id,
-               "balance" => 456.7
-             } = json_response(conn, 200)["data"]
+               "balance" => transfer.balance,
+               "id" => transfer.id,
+               "inserted_at" => NaiveDateTime.to_iso8601(transfer.inserted_at),
+               "is_valid" => false,
+               "receiver_id" => transfer.receiver_id,
+               "sender_id" => transfer.sender_id
+             } == json_response(conn, 200)["data"]
     end
 
-    @tag :skip
-    test "renders errors when data is invalid", %{conn: conn, transfer: transfer} do
-      conn = put(conn, Routes.transfer_path(conn, :refund, transfer), transfer: @invalid_attrs)
+    test "renders errors when data is invalid", %{conn: conn, users: users} do
+      transfer = transfer_fixture(users)
+      conn = put(conn, Routes.transfer_path(conn, :refund, transfer.id))
+      conn = put(conn, Routes.transfer_path(conn, :refund, transfer.id))
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
 
-  # describe "delete transfer" do
-  #   setup [:create_transfer]
-
-  #
-  #   test "deletes chosen transfer", %{conn: conn, transfer: transfer} do
-  #     conn = delete(conn, Routes.transfer_path(conn, :delete, transfer))
-  #     assert response(conn, 204)
-
-  #     assert_error_sent 404, fn ->
-  #       get(conn, Routes.transfer_path(conn, :show, transfer))
-  #     end
-  #   end
-  # end
-
-  defp create_transfer(_) do
-    transfer = fixture(:transfer)
-    %{transfer: transfer}
+  defp datetime_to_string(date) do
+    date
+    |> DateTime.to_string()
+    |> String.slice(0..9)
   end
 end
