@@ -11,7 +11,7 @@ defmodule BancohWeb.UserView do
   end
 
   def render("user.json", %{user: user}) do
-    %{id: user.id, ssn: user.ssn, name: user.name, surname: user.surname, balance: user.balance}
+    %{balance: user.balance, name: user.name, id: user.id, ssn: user.ssn, surname: user.surname}
   end
 
   def render("auth.json", %{token: token}) do

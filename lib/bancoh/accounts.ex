@@ -123,7 +123,8 @@ defmodule Bancoh.Accounts do
 
   ## Examples
 
-      iex> change_user(user)
+      iex> auth_user(user)
+      {:ok, token}
       %Ecto.Changeset{data: %User{}}
 
   """
@@ -136,11 +137,10 @@ defmodule Bancoh.Accounts do
         token = Phoenix.Token.sign(BancohWeb.Endpoint, "userauth", term)
         {:ok, token}
 
-      user ->
-        {:error, :unauthorized}
-
       true ->
-        {:error, :not_found}
+        {:error, :unauthorized}
     end
   end
+
+  def auth_user(_), do: {:error, :unauthorized}
 end
