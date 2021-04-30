@@ -29,6 +29,7 @@ defmodule Bancoh.Accounts.User do
     user
     |> changeset(attrs)
     |> cast(attrs, [:password])
+    |> validate_required([:password])
     |> validate_length(:password, min: 6, max: 20)
     |> put_pass_hash()
   end

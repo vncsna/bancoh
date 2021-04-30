@@ -18,10 +18,7 @@ defmodule BancohWeb.UserController do
   end
 
   def show(conn, _params) do
-    IO.puts(conn.assigns)
-
     id = conn.assigns[:current_user]
-
     user = Accounts.get_user!(id)
     render(conn, "show.json", user: user)
   end

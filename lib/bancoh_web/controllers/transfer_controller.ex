@@ -31,16 +31,20 @@ defmodule BancohWeb.TransferController do
     end
   end
 
-  def refund(conn, _params) do
-    id = conn.assigns[:current_user]
-    transfer = Transactions.get_transfer!(id)
+  def refund(conn, %{"id" => transfer_id}) do
+    user_id = conn.assigns[:current_user]
+    transfer = Transactions.get_transfer!(transfer_id)
 
-    case Transactions.refund_transfer(transfer) do
-      {:ok, %{transfer: transfer}} ->
-        render(conn, "show.json", transfer: transfer)
+    if user_id == transfer.sender_id do
+      case Transactions.refund_transfer(transfer) do
+        {:ok, %{transfer: transfer}} ->
+          render(conn, "show.json", transfer: transfer)
 
-      {:error, _failed_operation, failed_value, _changes_so_far} ->
-        {:error, failed_value}
+        {:error, _failed_operation, failed_value, _changes_so_far} ->
+          {:error, failed_value}
+      end
+    else
+      {:error, :unauthorized}
     end
   end
 end

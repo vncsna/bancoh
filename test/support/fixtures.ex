@@ -3,19 +3,21 @@ defmodule Bancoh.Fixtures do
   alias Bancoh.Transactions
 
   @valid_user %{
-    balance: 100,
+    balance: 100.0,
     name: "some name",
     password: "some password",
     ssn: "some ssn",
     surname: "some surname"
   }
+
   @update_user %{
-    balance: 456.7,
+    balance: 120.0,
     name: "some updated name",
     password: "some updated password",
     ssn: "some updated ssn",
     surname: "some updated surname"
   }
+
   @invalid_user %{
     balance: nil,
     name: nil,
@@ -40,17 +42,25 @@ defmodule Bancoh.Fixtures do
   def transfer_fixture(attrs \\ %{}) do
     {:ok, %{transfer: transfer}} =
       attrs
-      |> Enum.into(valid_transfer())
+      |> valid_transfer()
       |> Transactions.create_transfer()
 
     transfer
   end
 
   def valid_transfer(attrs \\ %{}) do
-    Enum.into(attrs, %{
-      balance: 100,
-      sender_id: user_fixture(%{ssn: "00000000000"}).id,
-      receiver_id: user_fixture(%{ssn: "11111111111"}).id
-    })
+    attrs
+    |> Enum.into(%{balance: 100})
+    |> add_user(:sender_id, "00000000000")
+    |> add_user(:receiver_id, "11111111111")
+  end
+
+  defp add_user(attrs, key, ssn) do
+    if Map.has_key?(attrs, key) do
+      attrs
+    else
+      user = user_fixture(%{ssn: ssn})
+      Map.put(attrs, key, user.id)
+    end
   end
 end
