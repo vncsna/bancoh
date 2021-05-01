@@ -2,11 +2,11 @@
 # action has a bug at the moment, on 2021.04.29.
 # https://github.com/AkhileshNS/heroku-deploy/issues/84
 
-name: Bancoh CD
+name: CD
 
 on:
   workflow_run:
-    workflows: ["Bancoh CI"]
+    workflows: ["CI"]
     branches: [main]
     types:
     - completed

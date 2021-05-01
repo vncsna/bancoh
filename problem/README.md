@@ -72,9 +72,9 @@ esforço necessário para alterar seu código e busque minimizá-lo. Se eu quise
 
 #### Opcionais
 Os pontos a seguir são opcionais, mas apreciamos vê-los:
-- [ ] Testes unitários e de integração
+- [x] Testes unitários e de integração
 - [x] Sistema deployado em algum provedor de [cloud](https://bancoh.herokuapp.com/)
-- [ ] Validações e erros bem estruturados
+- [x] Validações e erros bem estruturados
 
 #### Após o desafio técnico
 Em geral, iremos avaliar seu código poucos dias após o envio. Uma vez que nossa
@@ -119,7 +119,7 @@ caso haja saldo suficiente na conta do usuário logado para realização dela.
 
 #### Busca de transações por data
 
-- [ ] Neste endpoint, devem ser enviadas datas inicial e final.
+- [x] Neste endpoint, devem ser enviadas datas inicial e final.
 O endpoint deve retornar todas as transações realizadas pelo usuário logado entre essas datas em ordem cronológica.
 
 #### Visualização de saldo

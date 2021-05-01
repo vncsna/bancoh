@@ -13,12 +13,6 @@ defmodule BancohWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", BancohWeb do
-    pipe_through :browser
-
-    get "/", PageController, :index
-  end
-
   scope "/api", BancohWeb do
     pipe_through :api
 
