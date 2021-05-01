@@ -125,7 +125,9 @@ defmodule Bancoh.Accounts do
 
       iex> auth_user(user)
       {:ok, token}
-      %Ecto.Changeset{data: %User{}}
+
+      iex>auth_user(not_user)
+      {:error, :unauthorized}
 
   """
   def auth_user(%{"ssn" => ssn, "password" => password}) do

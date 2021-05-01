@@ -1,0 +1,233 @@
+{
+	"info": {
+		"_postman_id": "3ecf3319-a236-4975-a077-080223e8853d",
+		"name": "Bancoh",
+		"description": "Bank API with accounts and transactions.  \nIt's possible to create accounts and transfer money between accounts.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "No Auth",
+			"item": [
+				{
+					"name": "Create account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user\": {\r\n        \"balance\": 100,\r\n        \"name\": \"John\",\r\n        \"ssn\": \"00000000000\",\r\n        \"surname\": \"Doe\",\r\n        \"password\": \"password\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Description:\n- Create user\n\nConstraints:\n- SSN must be unique\n- Balance must be positive"
+					},
+					"response": []
+				},
+				{
+					"name": "Auth account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"user\": {\r\n        \"ssn\": \"00000000001\",\r\n        \"password\": \"password\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/auth",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"auth"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Yes Auth",
+			"item": [
+				{
+					"name": "Read balance",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						},
+						"description": "Description:\n- Read user\n\nConstraints:\n- Must be an authorized user"
+					},
+					"response": []
+				},
+				{
+					"name": "Create transfer",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"transfer\": {\r\n        \"balance\": 20,\r\n        \"receiver_id\": \"2\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/transfers",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transfers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List transfers by date",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/transfers?date_fr=2021-04-22&date_to=2021-04-24",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transfers"
+							],
+							"query": [
+								{
+									"key": "date_fr",
+									"value": "2021-04-22",
+									"description": "Starting date"
+								},
+								{
+									"key": "date_to",
+									"value": "2021-04-24",
+									"description": "Ending date"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refund transfer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/transfers/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"transfers",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "SFMyNTY.g2gDdAAAAAFkAAxjdXJyZW50X3VzZXJhAW4GAIJgOSR5AWIAAVGA.j2KSa1klN9EFwI-aUoXg7TV9qP5VJHVoefbaQCXtXBk",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": ""
+		}
+	]
+}
